@@ -3,6 +3,7 @@ from config import Config
 from extensions import db, migrate, jwt
 
 from routes.auth_routes import auth_bp
+from routes.note_routes import note_bp
 
 
 def create_app():
@@ -13,7 +14,10 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
 
+
+    #ALl BLUEPRINTS
     app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(note_bp, url_prefix="/notes")
 
     from models.user import User
     from models.note import Note
