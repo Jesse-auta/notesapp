@@ -3,6 +3,7 @@ import json
 import os
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+print(os.getenv("GEMINI_API_KEY"))
 
 def summarize_and_tag(title: str, content: str) -> dict:
     prompt = f"""You are a helpful assistant for a notes app.
@@ -15,10 +16,11 @@ def summarize_and_tag(title: str, content: str) -> dict:
     Note Content: {content}
 
     Respond ONLY with valid JSON."""
+    print("works till point 1")
 
     try:
         response = client.models.generate_content(
-            model="gemini-3-flash-preview",
+            model="gemini-1.5-flash",
             contents=prompt,
             config=genai.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -42,6 +44,7 @@ def summarize_and_tag(title: str, content: str) -> dict:
                 ]
             )
         )
+        print("Works till point 2")
 
         result = json.loads(response.text)
 

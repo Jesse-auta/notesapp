@@ -1,7 +1,6 @@
 from flask import Flask
 from config import Config
-from extensions import db, migrate, jwt
-
+from extensions import db, migrate, jwt, cors
 from routes.auth_routes import auth_bp
 from routes.note_routes import note_bp
 
@@ -13,9 +12,9 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
+    cors.init_app(app)
 
-
-    #ALl BLUEPRINTS
+    #ALl BLUEPRINTS SHOULD COME UNDER HERE
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(note_bp, url_prefix="/notes")
 
