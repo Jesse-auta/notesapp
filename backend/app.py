@@ -12,7 +12,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    cors.init_app(app)
+    cors.init_app(app, resources={r"/*": {"origins": "*"}})
 
     #ALl BLUEPRINTS SHOULD COME UNDER HERE
     app.register_blueprint(auth_bp, url_prefix="/auth")
