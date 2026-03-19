@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from extensions import db
 from models.note import Note
-from services.ai_services import summarize_and_tag
+from services.ai_services import summarize_and_tag, chat_response
 
 note_bp = Blueprint("notes", __name__)
 
@@ -138,3 +138,18 @@ def summarize_note(id):
         "summary": note.summary,
         "tags": note.tags
     })
+
+
+@note_bp.route("/chat", methods=["POST"])
+@jwt_required()
+def chat_with_notes():
+    data = request.json
+    question = data.get("question", "")
+    context = data.get("context", "")
+
+    if not question:
+        return jsonify({"error": "Question is required"}), 400
+
+
+    answer = chat_response(question, context)
+    return jsonify({"answer": answer})

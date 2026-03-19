@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Notes from "./pages/Notes";
@@ -19,6 +20,7 @@ const App = () => {
                         path="/notes"
                         element={
                             <ProtectedRoute>
+                                {/* <Navbar/>  */}
                                 <Notes />
                             </ProtectedRoute>
                         }
