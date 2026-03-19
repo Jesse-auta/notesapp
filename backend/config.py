@@ -8,4 +8,12 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     JWT_DECODE_ALGORITHMS = ["HS256"]
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+
+
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL",
+        "sqlite:///notemind.db"
+    ).replace("postgres://", "postgresql://")  
+
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
