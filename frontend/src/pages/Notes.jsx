@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import NoteCard from "../components/NoteCard";
 import NoteForm from "../components/NoteForm";
-import AiChatPanel from "../components/AiChatPanel";
+import AIChatPanel from "../components/AIChatPanel";
 
 const getGreeting = () => {
     const hour = new Date().getHours();
@@ -220,7 +220,7 @@ const Notes = () => {
             )}
 
             {/* AI Chat Panel */}
-            {showChat && <AiChatPanel onClose={() => setShowChat(false)} notes={notes} />}
+            {showChat && <AIChatPanel onClose={() => setShowChat(false)} notes={notes} />}
 
             {/* Floating Action Button */}
             {!showForm && (
