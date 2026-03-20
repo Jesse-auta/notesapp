@@ -21,6 +21,11 @@ def create_app():
     from models.user import User
     from models.note import Note
 
+    #Auto run migrations in render on startup
+    with app.app_context():
+        from flask_migrate import upgrade
+        upgrade()
+
     return app
 
 app = create_app()
