@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from extensions import db
 from models.note import Note
-from services.ai_services import summarize_and_tag, chat_response
+from services.ai_services import summarize_and_tag, chat_response, semantic_search
 
 note_bp = Blueprint("notes", __name__)
 
@@ -153,3 +153,52 @@ def chat_with_notes():
 
     answer = chat_response(question, context)
     return jsonify({"answer": answer})
+
+
+@note_bp.route("/search", methods=["GET"])
+@jwt_required()
+def search_notes():
+    user_id = int(get_jwt_identity())
+    query = request.args.get("q", "").strip()
+
+    if not query:
+        return jsonify({"results": []}), 200
+
+    # Fetch all user's notes
+    notes = Note.query.filter_by(user_id=user_id).all()
+
+    if not notes:
+        return jsonify({"results": []}), 200
+
+    # Build notes list for AI
+    notes_data = [
+        {
+            "id": note.id,
+            "title": note.title or "",
+            "content": note.content or "",
+            "summary": note.summary or "",
+            "tags": note.tags or ""
+        }
+        for note in notes
+    ]
+
+    matches = semantic_search(query, notes_data)
+
+    # Attach full note data to each match
+    notes_map = {note.id: note for note in notes}
+    results = []
+
+    for match in matches:
+        note = notes_map.get(match.get("id"))
+        if note:
+            results.append({
+                "id": note.id,
+                "title": note.title,
+                "content": note.content,
+                "summary": note.summary,
+                "tags": note.tags,
+                "created_at": str(note.created_at),
+                "reason": match.get("reason", "")
+            })
+
+    return jsonify({"results": results}), 200

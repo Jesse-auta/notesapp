@@ -76,3 +76,55 @@ def chat_response(question: str, context: str) -> str:
     except Exception as e:
         print(f"Chat error: {e}")
         return "I couldn't find an answer in your notes right now. Please try again."
+
+
+def semantic_search(query: str, notes: list) -> list:
+    if not notes:
+        return []
+
+    notes_context = "\n\n".join([
+        f"ID: {n['id']}\nTitle: {n['title']}\nContent: {n['content'] or ''}\nSummary: {n['summary'] or ''}\nTags: {n['tags'] or ''}"
+        for n in notes
+    ])
+
+    prompt = f"""You are a semantic search engine for a notes app.
+
+    The user is searching for: "{query}"
+
+    Here are the user's notes:
+    {notes_context}
+
+    Return a JSON array of the most relevant notes (maximum 5). For each match include:
+    - "id": the note's ID (integer)
+    - "reason": a short phrase explaining why it matched (e.g. "relates to work tasks")
+
+    Only include notes that are genuinely relevant. If nothing matches, return an empty array [].
+    Respond ONLY with a valid JSON array. No explanation, no markdown, no backticks."""
+
+    try:
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "openrouter/auto",
+                "messages": [{"role": "user", "content": prompt}]
+            }
+        )
+
+        raw = response.json()["choices"][0]["message"]["content"].strip()
+
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+            raw = raw.strip()
+
+        results = json.loads(raw)
+        return results if isinstance(results, list) else []
+
+    except Exception as e:
+        print(f"Semantic search error: {e}")
+        return []
