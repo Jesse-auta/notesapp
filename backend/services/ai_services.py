@@ -26,9 +26,18 @@ def summarize_and_tag(title: str, content: str) -> dict:
             }
         )
 
-        print("OpenRouter response:", response.json())
+        response_data = response.json()
+        print("OpenRouter response:", response_data)
 
-        raw = response.json()["choices"][0]["message"]["content"].strip()
+        if 'error' in response_data:
+            print(f"API error: {response_data['error']}")
+            return {"summary": "Error generating summary.", "tags": ""}
+
+        if 'choices' not in response_data:
+            print("No choices in response")
+            return {"summary": "Error generating summary.", "tags": ""}
+
+        raw = response_data["choices"][0]["message"]["content"].strip()
 
         if raw.startswith("```"):
             raw = raw.split("```")[1]
@@ -71,7 +80,18 @@ def chat_response(question: str, context: str) -> str:
             }
         )
 
-        raw = response.json()["choices"][0]["message"]["content"].strip()
+        response_data = response.json()
+        print("OpenRouter response:", response_data)
+
+        if 'error' in response_data:
+            print(f"API error: {response_data['error']}")
+            return "I couldn't find an answer in your notes right now. Please try again."
+
+        if 'choices' not in response_data:
+            print("No choices in response")
+            return "I couldn't find an answer in your notes right now. Please try again."
+
+        raw = response_data["choices"][0]["message"]["content"].strip()
         return raw
     except Exception as e:
         print(f"Chat error: {e}")
@@ -114,7 +134,18 @@ def semantic_search(query: str, notes: list) -> list:
             }
         )
 
-        raw = response.json()["choices"][0]["message"]["content"].strip()
+        response_data = response.json()
+        print("OpenRouter response:", response_data)
+
+        if 'error' in response_data:
+            print(f"API error: {response_data['error']}")
+            return []
+
+        if 'choices' not in response_data:
+            print("No choices in response")
+            return []
+
+        raw = response_data["choices"][0]["message"]["content"].strip()
 
         if raw.startswith("```"):
             raw = raw.split("```")[1]
