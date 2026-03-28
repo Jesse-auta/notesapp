@@ -55,6 +55,55 @@ def get_notes():
     return jsonify(result)
 
 
+@note_bp.route("/search", methods=["GET"])
+@jwt_required()
+def search_notes():
+    user_id = int(get_jwt_identity())
+    query = request.args.get("q", "").strip()
+
+    if not query:
+        return jsonify({"results": []}), 200
+
+    # Fetch all user's notes
+    notes = Note.query.filter_by(user_id=user_id).all()
+
+    if not notes:
+        return jsonify({"results": []}), 200
+
+    # Build notes list for AI
+    notes_data = [
+        {
+            "id": note.id,
+            "title": note.title or "",
+            "content": note.content or "",
+            "summary": note.summary or "",
+            "tags": note.tags or ""
+        }
+        for note in notes
+    ]
+
+    matches = semantic_search(query, notes_data)
+
+    # Attach full note data to each match
+    notes_map = {note.id: note for note in notes}
+    results = []
+
+    for match in matches:
+        note = notes_map.get(match.get("id"))
+        if note:
+            results.append({
+                "id": note.id,
+                "title": note.title,
+                "content": note.content,
+                "summary": note.summary,
+                "tags": note.tags,
+                "created_at": str(note.created_at),
+                "reason": match.get("reason", "")
+            })
+
+    return jsonify({"results": results}), 200
+
+
 @note_bp.route("/<int:id>", methods=["GET"])
 @jwt_required()
 def get_note(id):
@@ -155,50 +204,3 @@ def chat_with_notes():
     return jsonify({"answer": answer})
 
 
-@note_bp.route("/search", methods=["GET"])
-@jwt_required()
-def search_notes():
-    user_id = int(get_jwt_identity())
-    query = request.args.get("q", "").strip()
-
-    if not query:
-        return jsonify({"results": []}), 200
-
-    # Fetch all user's notes
-    notes = Note.query.filter_by(user_id=user_id).all()
-
-    if not notes:
-        return jsonify({"results": []}), 200
-
-    # Build notes list for AI
-    notes_data = [
-        {
-            "id": note.id,
-            "title": note.title or "",
-            "content": note.content or "",
-            "summary": note.summary or "",
-            "tags": note.tags or ""
-        }
-        for note in notes
-    ]
-
-    matches = semantic_search(query, notes_data)
-
-    # Attach full note data to each match
-    notes_map = {note.id: note for note in notes}
-    results = []
-
-    for match in matches:
-        note = notes_map.get(match.get("id"))
-        if note:
-            results.append({
-                "id": note.id,
-                "title": note.title,
-                "content": note.content,
-                "summary": note.summary,
-                "tags": note.tags,
-                "created_at": str(note.created_at),
-                "reason": match.get("reason", "")
-            })
-
-    return jsonify({"results": results}), 200

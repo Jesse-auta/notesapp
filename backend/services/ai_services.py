@@ -146,6 +146,7 @@ def semantic_search(query: str, notes: list) -> list:
             return []
 
         raw = response_data["choices"][0]["message"]["content"].strip()
+        print(raw)
 
         if raw.startswith("```"):
             raw = raw.split("```")[1]
