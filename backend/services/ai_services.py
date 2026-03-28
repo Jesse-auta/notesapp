@@ -129,7 +129,7 @@ def semantic_search(query: str, notes: list) -> list:
                 "Content-Type": "application/json"
             },
             json={
-                "model": "openrouter/auto",
+                "model": "openrouter/free",
                 "messages": [{"role": "user", "content": prompt}]
             }
         )
