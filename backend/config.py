@@ -9,6 +9,11 @@ class Config:
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     JWT_DECODE_ALGORITHMS = ["HS256"]
 
+    import os
+
+    url = os.getenv("DATABASE_URL")
+    print("Host👌👌👌👌:", url.split("@")[-1] if url else "None")
+
 
 
     SQLALCHEMY_DATABASE_URI = os.getenv(
