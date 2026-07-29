@@ -12,7 +12,7 @@ class Config:
     import os
 
     url = os.getenv("DATABASE_URL")
-    print("Host👌👌👌👌:", url.split("@")[-1] if url else "None")
+    
 
 
 
