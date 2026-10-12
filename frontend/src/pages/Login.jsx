@@ -43,7 +43,7 @@ const Login = () => {
                     {/* Logo */}
                     <div className="flex flex-col items-center mb-8">
                         <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
-                            <span className="material-symbols-outlined text-white" style={{ fontSize: "2rem" }}>edit_note</span>
+                            <span className="material-symbols-outlined text-white" style={{ fontSize: "2rem" }}>auto_awesome</span>
                         </div>
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">NoteMind</h1>
                         <p className="text-slate-500 dark:text-slate-400 mt-2 text-center">Organize your thoughts with intelligence</p>
